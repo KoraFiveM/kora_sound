@@ -1,4 +1,4 @@
-local hasPlayerLoaded = false
+local hasPlayerLoaded = LocalPlayer.state.isLoggedIn == true
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function() hasPlayerLoaded = true end)
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function() hasPlayerLoaded = false end)
