@@ -12,7 +12,7 @@
                     var id = data.transactionId;
 
                     if (id && activeSounds[id]) {
-                        activeSounds[id].stop();
+                        activeSounds[id].unload();
                         delete activeSounds[id];
                     }
 
@@ -20,12 +20,22 @@
                         src: ['./sounds/' + data.transactionFile + '.ogg'],
                         volume: data.transactionVolume,
                         loop: !!data.transactionLoop,
+                        onend: function () {
+                            if (data.transactionLoop) return;
+                            // A queued end callback may run after this id has been replaced.
+                            if (id && activeSounds[id] === sound) {
+                                delete activeSounds[id];
+                            } else if (lastOneShot === sound) {
+                                lastOneShot = null;
+                            }
+                            sound.unload();
+                        },
                     });
 
                     if (id) {
                         activeSounds[id] = sound;
                     } else {
-                        if (lastOneShot) lastOneShot.stop();
+                        if (lastOneShot) lastOneShot.unload();
                         lastOneShot = sound;
                     }
 
@@ -33,7 +43,7 @@
                 } else if (data.transactionType === 'stopSound') {
                     var stopId = data.transactionId;
                     if (stopId && activeSounds[stopId]) {
-                        activeSounds[stopId].stop();
+                        activeSounds[stopId].unload();
                         delete activeSounds[stopId];
                     }
                 }
