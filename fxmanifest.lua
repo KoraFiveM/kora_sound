@@ -1,14 +1,16 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+-- Keep the legacy resource name resolvable for exports['qbsound'] callers.
+provide 'qbsound'
 author 'Kakarot'
 description 'Sound export + server area sync with falloff, categories, cooldown, loops. Built on qblib.'
 version '2.1.0'
 
-dependency 'qblib'
+dependency 'kora_lib'
 
 shared_scripts {
-    '@qblib/init.lua',
+    '@kora_lib/init.lua',
     'config.lua',
 }
 

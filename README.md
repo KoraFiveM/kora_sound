@@ -1,6 +1,6 @@
 # interact-sound
 
-Basic custom-sound playback, built on qblib, with area sync, distance
+Basic custom-sound playback, built on kora_lib, with area sync, distance
 falloff, sound categories, loop/stop, and per-player anti-spam.
 
 ## Client export
@@ -52,6 +52,6 @@ without the extension.
 
 ## Credits
 Based on [plunkettscott/interact-sound](https://github.com/plunkettscott/interact-sound).
-This version rebuilds it on qblib and adds area falloff, sound categories,
+This version rebuilds it on kora_lib and adds area falloff, sound categories,
 loop/stop, and per-player cooldown on top of the original's event API.
 
