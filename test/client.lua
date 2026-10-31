@@ -12,7 +12,7 @@ local function start(loggedIn)
     function RegisterNetEvent(name, callback) events[name] = callback end
     function SendNUIMessage(message) messages[#messages + 1] = message end
     function exports(name, callback) exposed[name] = callback end
-    QB = { compat = { provideExport = function(resource, name, callback)
+    Kora = { compat = { provideExport = function(resource, name, callback)
         equal(resource, 'interact-sound', 'legacy export namespace')
         aliases[name] = callback
     end } }
