@@ -1,10 +1,7 @@
 local AREA_DISTANCE_LIMIT = 300.0
 
-local playerCooldowns = {}  
-local activeLoops = {}      
-
-
-
+local playerCooldowns = {}
+local activeLoops = {}
 
 local function passesCooldown(src)
     local now = GetGameTimer()
@@ -90,10 +87,10 @@ exports('PlaySound', playOnSource)         -- (src, file, volume?, options?)
 exports('PlaySoundAll', playOnAll)         -- (file, volume?, options?)
 exports('PlaySoundInArea', playInArea)     -- (coords, radius, file, volume?, options?)
 exports('StopSound', stopSound)            -- (id, target?)
- Kora.compat.provideExport('interact-sound', 'PlaySound', playOnSource)
- Kora.compat.provideExport('interact-sound', 'PlaySoundAll', playOnAll)
- Kora.compat.provideExport('interact-sound', 'PlaySoundInArea', playInArea)
- Kora.compat.provideExport('interact-sound', 'StopSound', stopSound)
+Kora.compat.provideExport('interact-sound', 'PlaySound', playOnSource)
+Kora.compat.provideExport('interact-sound', 'PlaySoundAll', playOnAll)
+Kora.compat.provideExport('interact-sound', 'PlaySoundInArea', playInArea)
+Kora.compat.provideExport('interact-sound', 'StopSound', stopSound)
 
 RegisterNetEvent('InteractSound_SV:PlayOnOne', function(clientNetId, soundFile, soundVolume)
     if not passesCooldown(source) then return end
