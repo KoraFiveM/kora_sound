@@ -102,7 +102,10 @@ RegisterNetEvent('InteractSound_SV:PlayOnSource', function(soundFile, soundVolum
     playOnSource(source, soundFile, soundVolume)
 end)
 
+-- Off by default: any client could play any sound to the whole server.
+-- Server scripts use the PlaySoundAll export instead.
 RegisterNetEvent('InteractSound_SV:PlayOnAll', function(soundFile, soundVolume)
+    if not Config.security.allowClientBroadcast then return end
     if not passesCooldown(source) then return end
     playOnAll(soundFile, soundVolume)
 end)

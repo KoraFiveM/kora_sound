@@ -15,7 +15,7 @@ local function start(loggedIn)
     Kora = { compat = { provideExport = function(resource, name, callback)
         equal(resource, 'interact-sound', 'legacy export namespace')
         aliases[name] = callback
-    end } }
+    end }, config = dofile('test/config_mock.lua') }
     dofile('config.lua')
     dofile(arg[1] or 'client/main.lua')
     equal(aliases.PlaySound, exposed.PlaySound, 'legacy play alias')

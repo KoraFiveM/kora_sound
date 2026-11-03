@@ -1,4 +1,12 @@
-Config = {}
+Config = Kora.config.define({
+    security = Kora.config.object({
+        allowClientBroadcast = Kora.config.boolean(false, {
+            label = 'Let players play sounds to everyone',
+            description = 'Accept the legacy InteractSound_SV:PlayOnAll event from clients. Any player can then play any sound to the whole server. Server scripts can always use exports.kora_sound:PlaySoundAll.',
+            scope = 'server',
+        }),
+    }),
+})
 
 Config.defaultVolume = 0.3
 Config.defaultRange = 30.0     -- used when playInArea is called without a radius
