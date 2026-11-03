@@ -52,4 +52,53 @@ equal(sent[1].name, 'InteractSound_CL:PlayOnAll', 'opted-in broadcast event')
 equal(sent[1].target, -1, 'opted-in broadcast reaches everyone')
 fire(7, 'InteractSound_SV:PlayOnAll', 'Alert', 0.4)
 equal(#sent, 2, 'opted-in broadcast after cooldown')
+
+-- F#407/F#408: net entry points are restricted to the sender and validated.
+local function point(x) return setmetatable({ x = x }, { __sub = function(a, b) return point(a.x - b.x) end, __len = function(a) return math.abs(a.x) end }) end
+local coords = { [1] = 0.0, [2] = 5.0, [3] = 50.0 }
+fire, exposed, sent = start()
+function GetPlayers() return { '1', '2', '3' } end
+function GetPlayerPed(id) return tonumber(id) end
+function GetEntityCoords(ped) return point(coords[ped]) end
+fire(1, 'InteractSound_SV:PlayOnOne', 2, 'Alert', 1.0)
+equal(#sent, 0, 'PlayOnOne to another player is dropped')
+fire(1, 'InteractSound_SV:PlayOnOne', 1, 'Alert', 0.5)
+equal(#sent, 1, 'PlayOnOne to self still plays')
+equal(sent[1].target, 1, 'PlayOnOne self target')
+
+fire(1, 'InteractSound_SV:PlayOnSource', 'Alert', 50.0)
+equal(sent[2].args[2], 1.0, 'volume above 1 is clamped')
+fire(1, 'InteractSound_SV:PlayOnSource', 'Alert', -3)
+equal(sent[3].args[2], 0.0, 'negative volume is clamped')
+fire(1, 'InteractSound_SV:PlayOnSource', 'Alert', '0.4')
+equal(sent[4].args[2], 0.4, 'numeric string volume is coerced')
+fire(1, 'InteractSound_SV:PlayOnSource', 'Alert', { 1 })
+equal(sent[5].args[2], 0.6, 'non-number volume falls back to the category default')
+fire(1, 'InteractSound_SV:PlayOnSource', 'Alert', 0 / 0)
+equal(sent[6].args[2], 0.6, 'NaN volume falls back to the default')
+
+local count = #sent
+for _, bad in ipairs({ '../../x', 'a/b', 'a.b', '', string.rep('a', 65), 12, true, {} }) do
+    fire(1, 'InteractSound_SV:PlayOnSource', bad, 0.2)
+end
+fire(1, 'InteractSound_SV:PlayOnSource', nil, 0.25)
+equal(#sent, count, 'invalid sound file names are dropped')
+fire(1, 'InteractSound_SV:PlayOnSource', 'security-alarm', 0.2)
+equal(#sent, count + 1, 'valid file names with dashes play')
+
+-- PlayWithinDistance: radius capped for clients, junk radius does not throw.
+count = #sent
+fire(1, 'InteractSound_SV:PlayWithinDistance', 300.0, 'DoorOpen', 0.25)
+equal(#sent, count + 2, 'client radius capped to 10 m (players at 0 and 5 only)')
+count = #sent
+fire(1, 'InteractSound_SV:PlayWithinDistance', 'huge', 'DoorOpen', 0.25)
+equal(#sent, count + 2, 'non-number radius falls back to the default range')
+fire(1, 'InteractSound_SV:PlayWithinDistance', 5.0, '../x', 0.25)
+equal(#sent, count + 2, 'invalid file in PlayWithinDistance is dropped')
+
+-- Server exports keep their larger radius but volumes are still clamped.
+count = #sent
+exposed.PlaySoundInArea(point(0.0), 100.0, 'DoorOpen', 9)
+equal(#sent, count + 3, 'server export radius is not capped to the client limit')
+equal(sent[count + 1].args[2], 1.0, 'export volume clamped')
 print(('%d server checks passed'):format(checks))

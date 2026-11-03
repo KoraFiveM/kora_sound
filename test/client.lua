@@ -68,4 +68,12 @@ for _, state in ipairs({ { value = false }, {} }) do
     equal(#messages, 6, 'login after logout enables exported playback')
     equal(messages[6].transactionId, 'again', 'export options preserved')
 end
+
+-- F#408: the NUI only ever sees plain file names and volumes within 0..1.
+events, exposed, messages = start(true)
+exposed.PlaySound('../../evil', 0.5)
+exposed.PlaySound(nil, 0.5)
+equal(#messages, 0, 'invalid file names never reach the NUI')
+events['InteractSound_CL:PlayOnOne']('DoorOpen', 99)
+equal(messages[1].transactionVolume, 1.0, 'volume clamped before reaching Howler')
 print(('%d client state checks passed'):format(checks))

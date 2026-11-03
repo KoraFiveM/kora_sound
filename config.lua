@@ -12,6 +12,7 @@ Config.defaultVolume = 0.3
 Config.defaultRange = 30.0     -- used when playInArea is called without a radius
 Config.minFalloffVolume = 0.05 -- floor volume at the edge of range, not a hard cutoff
 Config.cooldownMs = 150        -- per-player anti-spam on the legacy net-event entry points
+Config.netMaxDistance = 10.0   -- largest radius a client may request through InteractSound_SV:PlayWithinDistance
 
 -- Category presets used when a caller doesn't pass an explicit volume.
 Config.categories = {
@@ -35,9 +36,22 @@ Config.soundCategory = {
     ventilator = 'ambient', coffee_machine = 'ambient', vending_machine = 'ambient',
 }
 
+-- Sound names end up in a NUI file path, so only plain file names are accepted.
+function Config.isSoundFile(soundFile)
+    return type(soundFile) == 'string' and #soundFile <= 64 and soundFile:find('^[%w_%-]+$') ~= nil
+end
+
+-- A real number clamped to 0..1 (Howler amplifies above 1), or nil for anything else.
+function Config.cleanVolume(volume)
+    volume = tonumber(volume)
+    if not volume or volume ~= volume then return nil end
+    return math.max(0.0, math.min(volume, 1.0))
+end
+
 -- Explicit volume wins, then the sound's category preset, then the global default.
 function Config.resolveVolume(soundFile, explicitVolume)
-    if explicitVolume then return explicitVolume end
+    local explicit = Config.cleanVolume(explicitVolume)
+    if explicit then return explicit end
 
     local category = Config.soundCategory[soundFile]
     if category and Config.categories[category] then

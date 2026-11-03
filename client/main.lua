@@ -6,6 +6,7 @@ RegisterNetEvent('QBCore:Client:OnPlayerUnload', function() hasPlayerLoaded = fa
 -- options = { loop = boolean, id = string }  -- id is required to loop or to stop it later
 local function playSound(soundFile, volume, options)
     if not hasPlayerLoaded then return end
+    if not Config.isSoundFile(soundFile) then return end
     options = options or {}
 
     SendNUIMessage({

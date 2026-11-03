@@ -40,7 +40,9 @@ end
 
 local function playInArea(coords, radius, soundFile, volume, options)
     options = options or {}
-    radius = math.min(radius or Config.defaultRange, AREA_DISTANCE_LIMIT)
+    radius = tonumber(radius)
+    if not radius or radius ~= radius then radius = Config.defaultRange end
+    radius = math.min(radius, AREA_DISTANCE_LIMIT)
     local baseVolume = Config.resolveVolume(soundFile, volume)
 
     if options.loop and options.id then
@@ -92,27 +94,39 @@ Kora.compat.provideExport('interact-sound', 'PlaySoundAll', playOnAll)
 Kora.compat.provideExport('interact-sound', 'PlaySoundInArea', playInArea)
 Kora.compat.provideExport('interact-sound', 'StopSound', stopSound)
 
+-- Client-sent entry points: sounds stay on the sender (or near them), file names
+-- are checked and volumes are clamped in Config.resolveVolume.
 RegisterNetEvent('InteractSound_SV:PlayOnOne', function(clientNetId, soundFile, soundVolume)
-    if not passesCooldown(source) then return end
-    playOnSource(clientNetId, soundFile, soundVolume)
+    local src = source
+    if tonumber(clientNetId) ~= src then return end -- cannot target other players
+    if not Config.isSoundFile(soundFile) then return end
+    if not passesCooldown(src) then return end
+    playOnSource(src, soundFile, soundVolume)
 end)
 
 RegisterNetEvent('InteractSound_SV:PlayOnSource', function(soundFile, soundVolume)
-    if not passesCooldown(source) then return end
-    playOnSource(source, soundFile, soundVolume)
+    local src = source
+    if not Config.isSoundFile(soundFile) then return end
+    if not passesCooldown(src) then return end
+    playOnSource(src, soundFile, soundVolume)
 end)
 
 -- Off by default: any client could play any sound to the whole server.
 -- Server scripts use the PlaySoundAll export instead.
 RegisterNetEvent('InteractSound_SV:PlayOnAll', function(soundFile, soundVolume)
     if not Config.security.allowClientBroadcast then return end
+    if not Config.isSoundFile(soundFile) then return end
     if not passesCooldown(source) then return end
     playOnAll(soundFile, soundVolume)
 end)
 
 RegisterNetEvent('InteractSound_SV:PlayWithinDistance', function(maxDistance, soundFile, soundVolume)
-    if not passesCooldown(source) then return end
-    playInArea(GetEntityCoords(GetPlayerPed(source)), maxDistance, soundFile, soundVolume)
+    local src = source
+    if not Config.isSoundFile(soundFile) then return end
+    if not passesCooldown(src) then return end
+    maxDistance = tonumber(maxDistance)
+    if not maxDistance or maxDistance ~= maxDistance then maxDistance = Config.defaultRange end
+    playInArea(GetEntityCoords(GetPlayerPed(src)), math.min(maxDistance, Config.netMaxDistance), soundFile, soundVolume)
 end)
 
 AddEventHandler('playerDropped', function()
