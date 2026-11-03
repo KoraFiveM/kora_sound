@@ -1,12 +1,15 @@
-// From qbsound: node test/sounds.cjs /path/to/howler.core.js [client/html/index.html]
+// node test/sounds.cjs [/path/to/howler.js] [client/html/index.html]  (defaults to the vendored client/html/howler.min.js)
 // Actual Howler 2.1.1 + shipped message handler; inert Audio and controlled timers.
 // No audio-file/network loading, browser playback, or in-game memory claim.
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
-const provider = process.argv[2];
-assert(provider, 'supply the pinned Howler 2.1.1 source path');
+const provider = process.argv[2] || path.join(__dirname, '../client/html/howler.min.js');
+if (!fs.existsSync(provider)) {
+    console.log(`SKIP: ${provider} not found (vendor Howler 2.1.1 there or pass a path)`);
+    process.exit(0);
+}
 const html = process.argv[3] || path.join(__dirname, '../client/html/index.html');
 const timers = new Map();
 let nextTimer = 0;

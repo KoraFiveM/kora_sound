@@ -130,5 +130,12 @@ RegisterNetEvent('InteractSound_SV:PlayWithinDistance', function(maxDistance, so
 end)
 
 AddEventHandler('playerDropped', function()
-    playerCooldowns[source] = nil
+    local src = source
+    playerCooldowns[src] = nil
+    for id, loop in pairs(activeLoops) do
+        if loop.recipients then
+            loop.recipients[src] = nil
+            if next(loop.recipients) == nil then activeLoops[id] = nil end
+        end
+    end
 end)

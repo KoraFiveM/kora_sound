@@ -101,4 +101,15 @@ count = #sent
 exposed.PlaySoundInArea(point(0.0), 100.0, 'DoorOpen', 9)
 equal(#sent, count + 3, 'server export radius is not capped to the client limit')
 equal(sent[count + 1].args[2], 1.0, 'export volume clamped')
+-- F#410: dropped players are pruned from active loops.
+fire, exposed, sent = start()
+exposed.PlaySound(5, 'Alert', 0.5, { loop = true, id = 'l1' })
+exposed.PlaySound(6, 'Alert', 0.5, { loop = true, id = 'l1' })
+exposed.PlaySound(5, 'Alert', 0.5, { loop = true, id = 'l2' })
+fire(5, 'playerDropped')
+count = #sent
+exposed.StopSound('l1')
+equal(#sent, count + 1, 'stop after drop only reaches remaining recipients')
+equal(sent[#sent].target, 6, 'stop skips the dropped player')
+
 print(('%d server checks passed'):format(checks))

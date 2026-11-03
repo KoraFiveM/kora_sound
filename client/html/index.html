@@ -1,6 +1,7 @@
 <html>
     <head>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.1/howler.min.js" type="text/javascript"></script>
+        <!-- Vendored copy (client/html/howler.min.js, Howler 2.1.1); the CDN is only a fallback while the file is missing. -->
+        <script src="./howler.min.js" type="text/javascript" onerror="var s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.1/howler.min.js'; document.head.appendChild(s);"></script>
         <script>
             var lastOneShot = null;   // untracked plays (no id): only one at a time, matches old behavior
             var activeSounds = {};    // id -> Howl instance, for anything started with an id (loops or not)

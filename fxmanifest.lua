@@ -21,5 +21,6 @@ ui_page 'client/html/index.html'
 
 files {
     'client/html/index.html',
+    'client/html/*.js',
     'client/html/sounds/*.ogg',
 }
