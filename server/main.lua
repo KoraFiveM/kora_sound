@@ -13,6 +13,22 @@ local function passesCooldown(src)
     return true
 end
 
+-- The legacy net-event entry points below take soundFile/soundVolume straight
+-- from the client. Reject anything that isn't a plausible sound name, and
+-- drop a volume that isn't a sane number rather than forwarding it as-is
+-- (resolveVolume would otherwise pass a bogus client value straight to NUI).
+-- The client builds './sounds/' .. soundFile .. '.ogg'; keep this to a bare file
+-- name (no slashes/dots) so a crafted value can't walk the NUI's file scheme.
+local function validSoundFile(value)
+    return type(value) == 'string' and value:match('^[%w_%-]+$') ~= nil and #value <= 128
+end
+
+local function validVolume(value)
+    if value == nil then return nil end
+    if type(value) ~= 'number' or value ~= value or value < 0 or value > 2 then return nil end
+    return value
+end
+
 local function playOnSource(src, soundFile, volume, options)
     options = options or {}
     local finalVolume = Config.resolveVolume(soundFile, volume)
@@ -94,22 +110,28 @@ Kora.compat.provideExport('interact-sound', 'StopSound', stopSound)
 
 RegisterNetEvent('InteractSound_SV:PlayOnOne', function(clientNetId, soundFile, soundVolume)
     if not passesCooldown(source) then return end
-    playOnSource(clientNetId, soundFile, soundVolume)
+    if not validSoundFile(soundFile) then return end
+    local target = tonumber(clientNetId)
+    if not target or GetPlayerName(target) == nil then return end
+    playOnSource(target, soundFile, validVolume(soundVolume))
 end)
 
 RegisterNetEvent('InteractSound_SV:PlayOnSource', function(soundFile, soundVolume)
     if not passesCooldown(source) then return end
-    playOnSource(source, soundFile, soundVolume)
+    if not validSoundFile(soundFile) then return end
+    playOnSource(source, soundFile, validVolume(soundVolume))
 end)
 
 RegisterNetEvent('InteractSound_SV:PlayOnAll', function(soundFile, soundVolume)
     if not passesCooldown(source) then return end
-    playOnAll(soundFile, soundVolume)
+    if not validSoundFile(soundFile) then return end
+    playOnAll(soundFile, validVolume(soundVolume))
 end)
 
 RegisterNetEvent('InteractSound_SV:PlayWithinDistance', function(maxDistance, soundFile, soundVolume)
     if not passesCooldown(source) then return end
-    playInArea(GetEntityCoords(GetPlayerPed(source)), maxDistance, soundFile, soundVolume)
+    if not validSoundFile(soundFile) then return end
+    playInArea(GetEntityCoords(GetPlayerPed(source)), tonumber(maxDistance), soundFile, validVolume(soundVolume))
 end)
 
 AddEventHandler('playerDropped', function()
