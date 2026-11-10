@@ -112,7 +112,8 @@ RegisterNetEvent('InteractSound_SV:PlayOnOne', function(clientNetId, soundFile, 
     if not passesCooldown(source) then return end
     if not validSoundFile(soundFile) then return end
     local target = tonumber(clientNetId)
-    if not target or GetPlayerName(target) == nil then return end
+    -- GetPlayerName raises on 0 and other non-ids, so only a positive whole id reaches it.
+    if not target or target < 1 or target % 1 ~= 0 or GetPlayerName(target) == nil then return end
     playOnSource(target, soundFile, validVolume(soundVolume))
 end)
 
