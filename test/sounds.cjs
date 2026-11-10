@@ -1,4 +1,4 @@
-// From qbsound: node test/sounds.cjs /path/to/howler.core.js [client/html/index.html]
+// From kora_sound: node test/sounds.cjs /path/to/howler.core.js [client/html/index.html]
 // Actual Howler 2.1.1 + shipped message handler; inert Audio and controlled timers.
 // No audio-file/network loading, browser playback, or in-game memory claim.
 const fs = require('node:fs');
@@ -140,4 +140,4 @@ for (let i = 0; i < 10; i++) {
 }
 foreign.unload();
 eq(Howler._howls.length, 0);
-console.log(`qbsound actual Howler/message lifecycle: ${checks} checks passed`);
+console.log(`kora_sound actual Howler/message lifecycle: ${checks} checks passed`);
