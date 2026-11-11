@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 author 'Kakarot'
 description 'Sound export + server area sync with falloff, categories, cooldown, loops. Built on kora_lib.'
-version '2.1.0'
+version '0.1.0'
 
 dependency 'kora_lib'
 
