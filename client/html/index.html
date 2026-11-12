@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.1/howler.min.js" type="text/javascript"></script>
+        <script>
+            var lastOneShot = null;   // untracked plays (no id): only one at a time, matches old behavior
+            var activeSounds = {};    // id -> Howl instance, for anything started with an id (loops or not)
+
+            window.addEventListener('message', function (event) {
+                var data = event.data;
+
+                if (data.transactionType === 'playSound') {
+                    var id = data.transactionId;
+
+                    if (id && activeSounds[id]) {
+                        activeSounds[id].unload();
+                        delete activeSounds[id];
+                    }
+
+                    var sound = new Howl({
+                        src: ['./sounds/' + data.transactionFile + '.ogg'],
+                        volume: data.transactionVolume,
+                        loop: !!data.transactionLoop,
+                        onend: function () {
+                            if (data.transactionLoop) return;
+                            // A queued end callback may run after this id has been replaced.
+                            if (id && activeSounds[id] === sound) {
+                                delete activeSounds[id];
+                            } else if (lastOneShot === sound) {
+                                lastOneShot = null;
+                            }
+                            sound.unload();
+                        },
+                    });
+
+                    if (id) {
+                        activeSounds[id] = sound;
+                    } else {
+                        if (lastOneShot) lastOneShot.unload();
+                        lastOneShot = sound;
+                    }
+
+                    sound.play();
+                } else if (data.transactionType === 'stopSound') {
+                    var stopId = data.transactionId;
+                    if (stopId && activeSounds[stopId]) {
+                        activeSounds[stopId].unload();
+                        delete activeSounds[stopId];
+                    }
+                }
+            });
+        </script>
+    </head>
+</html>
