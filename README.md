@@ -55,3 +55,6 @@ Based on [plunkettscott/interact-sound](https://github.com/plunkettscott/interac
 This version rebuilds it on kora_lib and adds area falloff, sound categories,
 loop/stop, and per-player cooldown on top of the original's event API.
 
+
+## Documentation
+Full docs (exports, events, configuration, sounds, troubleshooting) are in [`docs/`](docs/index.md).
