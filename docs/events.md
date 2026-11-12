@@ -1,11 +1,11 @@
 ---
 title: Events
-sidebar_position: 3
+sidebar_position: 7
 ---
 
 # Events
 
-These are the classic `interact-sound` events, kept so older scripts keep working. New code should use the [exports](./exports.md).
+These are the classic `interact-sound` events, kept so older scripts keep working. New code should use the [exports](./api/index.md).
 
 ## Server net events (client to server)
 
