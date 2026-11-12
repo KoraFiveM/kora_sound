@@ -11,9 +11,9 @@ Current version: see `version` in `fxmanifest.lua`.
 
 ## Features
 
-- Client and server exports to play and stop sounds. See [Exports](./exports.md).
+- Client and server exports to play and stop sounds. See [API reference](./api/index.md).
 - Legacy `InteractSound_CL:*` and `InteractSound_SV:*` events kept for old scripts. See [Events](./events.md).
-- Volume resolution: explicit volume, then category preset, then default. See [Configuration](./configuration.md).
+- Volume resolution: explicit volume, then category preset, then default. See [Configuration](./api/configuration.md).
 - Area playback with linear falloff and a 300 unit radius cap.
 - Loops tracked by id so they can be stopped later.
 - 87 bundled sounds. See [Sounds](./sounds.md).
@@ -24,27 +24,23 @@ Current version: see `version` in `fxmanifest.lua`.
 
 ## Installation
 
-1. Place the resource in your resources folder.
-2. Ensure it after `kora_lib`:
-
-   ```cfg
-   ensure kora_lib
-   ensure kora_sound
-   ```
-
-3. No SQL, items, commands or ACE permissions are involved.
+See [Installation](./installation.md). In short: ensure `kora_lib`, then `kora_sound`; no SQL, items, commands or ACE permissions are involved.
 
 ## Testing
 
 - `lua5.4 test/client.lua` (from the resource directory) checks the client exports and events with stubs.
 - `node test/sounds.cjs /path/to/howler.core.js` runs the shipped NUI message handler against Howler 2.1.1 with inert audio.
 
-## Pages
+## Documentation map
 
-- [Exports](./exports.md) - client and server exports with signatures and examples
+- [Installation](./installation.md) - install steps, manifest reference, start order, tests
+- [How to use](./how-to-use.md) - volume resolution, area falloff, loops, examples and legacy compatibility
+- [API reference](./api/index.md) - export names, conventions and examples
+  - [Server exports](./api/server-exports.md) - `PlaySound`, `PlaySoundAll`, `PlaySoundInArea`, `StopSound` with parameters
+  - [Client exports](./api/client-exports.md) - local `PlaySound` and `StopSound`
+  - [Configuration](./api/configuration.md) - every `Config` key, categories and helper functions
 - [Events](./events.md) - legacy net events, validation and cooldown
-- [Configuration](./configuration.md) - volumes, categories, falloff, cooldown
 - [Sounds](./sounds.md) - bundled sounds, adding your own, NUI behaviour
 - [Troubleshooting](./troubleshooting.md) - caveats and common problems
 
-This resource registers no commands, items, ACE permissions or database tables.
+This resource registers no commands, items, ACE permissions or database tables, so there is no commands page.
