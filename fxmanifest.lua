@@ -21,3 +21,5 @@ files {
     'client/html/index.html',
     'client/html/sounds/*.ogg',
 }
+
+server_script 'kora_versioncheck.lua'
